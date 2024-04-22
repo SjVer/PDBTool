@@ -31,3 +31,7 @@ reader_read_t :: proc(reader: ^Reader, $T: typeid) -> T {
 	data := reader_read(reader, size_of(T))
 	return (^T)(raw_data(data))^
 }
+
+reader_read_into :: proc(reader: ^Reader, dest: ^$T) {
+	dest^ = reader_read_t(reader, T)
+}

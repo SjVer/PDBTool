@@ -41,7 +41,7 @@ parse_directory :: proc(raw_file: RawFile) -> (dir: RawStreamDirectory) {
     // read stream sizes
 	dir.stream_sizes = make([]u32le, dir.stream_count)
 	for i in 0 ..< dir.stream_count {
-		dir.stream_sizes[i] = util.reader_read_t(&dir_reader, u32le)
+		util.reader_read_into(&dir_reader, &dir.stream_sizes[i])
 
 		// sometimes the size is UINT32_MAX, fuck knows why. even LLVM doesn't know:
 		// https://github.com/llvm/llvm-project/blob/eefee382186005d3662958e076c8e61e286ea1ab/
@@ -63,7 +63,7 @@ parse_directory :: proc(raw_file: RawFile) -> (dir: RawStreamDirectory) {
 		dir.stream_blocks[s] = make([]u32le, block_count)
 
 		for b in 0 ..< block_count {
-			dir.stream_blocks[s][b] = util.reader_read_t(&dir_reader, u32le)
+			util.reader_read_into(&dir_reader, &dir.stream_blocks[s][b])
 		}
 	}
 

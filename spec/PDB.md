@@ -84,7 +84,7 @@ struct PdbStreamHeader {
 `Version` is one of the following enum:
 
 ```cpp
-enum class PdbStreamVersion : uint32_t {
+enum PdbVersion {
   VC2 = 19941610,
   VC4 = 19950623,
   VC41 = 19950814,
@@ -102,3 +102,49 @@ enum class PdbStreamVersion : uint32_t {
 
 ### The Named Stream Map
 
+Following the header is a serialized hash table mapping stream names to stream indices.
+
+The on-disk layout consists of a single string buffer prefixed by a 32-bit length and the actual hash map, which consists of pairs of string buffer indices and the values, stream indices:
+
+```cpp
+struct HashMap {
+  ulittle32_t Size;
+  ulittle32_t Capacity;
+  uint8_t PresentBitVector[Capacity / 8];
+  uint8_t DeletedBitVector[Capacity / 8];
+  struct { ulittle32_t Key; ulittle32_t Value; } Buckets[];
+}
+```
+
+- **Size**: The number of pairs in the table.
+- **Capacity**: The capacity the table.
+- **Present Bit Vector**: A serialized bit vector marking which buckets are used.
+- **Deleted Bit Vector**: A serialized bit vector marking which buckets are deleted.
+
+**NOTE:** The actual number of pairs in the raw data seems to be `Size + 1`, and the `Capacity` should probably be used to determine the number of buckets in the deserialized hash map.
+
+Note that the length of this map is not specified, so it needs to be parsed entirely to figure out what comes after.
+
+### PDB Feature Codes
+
+Following the named stream map, and consuming all remaining bytes of the PDB stream is a list of 32-bit feature flags:
+
+```cpp
+enum PdbFeatureFlag {
+  VC110 = 20091201,
+  VC140 = 20140508,
+  NoTypeMerge = 0x4D544F4E,
+  MinimalDebugInfo = 0x494E494D,
+};
+```
+
+- **VC110**: This is the last flag; the PDB file contains an IPI stream.
+- **VC140**: Other feature flags may be present; the PDB file contains an IPI stream.
+- **NoTypeMerge**: There might be duplicate types in the TPI stream. Why is unclear.
+- **MinimalDebugInfo**: The program was linked with `/DEBUG:FASTLINK`. There is no TPI/IPI stream.
+
+###
+
+<br>
+
+For mapping a PDB to an EXE, see [LLVM's PDB spec](https://llvm.org/docs/PDB/PdbStream.html#matching-a-pdb-to-its-executable).

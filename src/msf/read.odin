@@ -69,7 +69,6 @@ read_iteration_block :: proc(
 read_msf_file :: proc(reader: ^util.Reader) -> (file: RawFile) {
 	// read the superblock for some needed metadata
 	file.first_interval.first_block = read_superblock(reader)
-	log.debug(rawfile_sb(file))
 
 	// check file size
 	block_size := cast(int)rawfile_sb(file).block_size
