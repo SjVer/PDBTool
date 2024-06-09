@@ -35,3 +35,20 @@ reader_read_t :: proc(reader: ^Reader, $T: typeid) -> T {
 reader_read_into :: proc(reader: ^Reader, dest: ^$T) {
 	dest^ = reader_read_t(reader, T)
 }
+
+reader_read_cstring :: proc(reader: ^Reader) -> string {
+	start := reader.offset
+	for reader.data[reader.offset] != 0 {
+		reader.offset += 1
+		assert(reader.offset < len(reader.data), "Unterminated string")
+	}
+	
+	reader.offset += 1 // skip null terminator
+	assert(reader.offset <= len(reader.data), "Unterminated string")
+
+	return string(reader.data[start:reader.offset - 1])
+}
+
+reader_skip_t :: proc(reader: ^Reader, $T: typeid) {
+	reader.offset += size_of(T)
+}

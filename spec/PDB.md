@@ -70,10 +70,10 @@ At offset 0:
 
 ```cpp
 struct PdbStreamHeader {
-    ulittle32_t Version;
-    ulittle32_t Signature;
-    ulittle32_t Age;
-    Guid UniqueId;
+  ulittle32_t Version;
+  ulittle32_t Signature;
+  ulittle32_t Age;
+  Guid UniqueId;
 };
 ```
 

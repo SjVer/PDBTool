@@ -1,10 +1,12 @@
 package pdb
 
-import "../msf"
-import "../util"
 import "core:log"
 import "core:slice"
 import "core:strings"
+
+import "../msf"
+import "../util"
+import "dbi"
 
 PDB_STREAM_INDEX :: 1
 
@@ -20,6 +22,8 @@ parse_pdb_header :: proc(dir: ^msf.StreamDirectory) -> PdbHeader {
 
 parse_pdb_msf :: proc(dir: ^msf.StreamDirectory) -> (pdb: ProgramDatabase) {
 	pdb.header = parse_pdb_header(dir)
+	pdb.debug_info = dbi.parse_dbi_stream(dir)
+	log.debug(pdb.debug_info)
 
-	return pdb
+	return
 }

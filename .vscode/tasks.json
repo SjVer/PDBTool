@@ -37,7 +37,7 @@
             "args": [],
             "options": {
                 "cwd": "${workspaceFolder}"
-            }
+            },
         },
         {
             "type": "shell",

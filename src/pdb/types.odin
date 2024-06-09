@@ -1,5 +1,7 @@
 package pdb
 
+import "dbi"
+
 Guid :: struct {
 	data1: u32le,
 	data2: u16le,
@@ -29,4 +31,5 @@ PdbHeader :: struct {
 
 ProgramDatabase :: struct {
 	using header: PdbHeader,
+	debug_info: dbi.DebugInfo,
 }
